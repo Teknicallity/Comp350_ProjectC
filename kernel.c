@@ -99,11 +99,12 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
  */
     char directory[512];
     int entrySize = 32;
+    int fileEntry = 0; //current entry position
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
 
-    int fileEntry; //current entry position
-    for (fileEntry=0; fileEntry<512; fileEntry+32){
+    
+    for (fileEntry = 0; fileEntry<512; fileEntry+32){
 
         int match = 0;
 
