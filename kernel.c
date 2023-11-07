@@ -10,27 +10,21 @@ void readSector(char*, int);
 
 int main() {
 //    char line[80];
-    //printString("Hello\n");
-
-    //printString("Enter a line: ");
-    //readString(line);
-    //printString(line);
-
-//    char buffer[512];
-//    readSector(buffer, 30);
-//    printString(buffer);
-
 //    makeInterrupt21();
-//    interrupt(0x21,0,0,0,0);
+//    interrupt(0x21,1,line,0,0);
+//    printString("\n");
+//    interrupt(0x21,0,line,0,0);
 
-    char line[80];
+    char buffer[13312];   /*this is the maximum size of a file*/
+    int sectorsRead;
     makeInterrupt21();
-    interrupt(0x21,1,line,0,0);
-    printString("\n");
-    interrupt(0x21,0,line,0,0);
+    interrupt(0x21, 3, "messag", buffer, &sectorsRead);   /*read the file into buffer*/
+    if (sectorsRead>0)
+        interrupt(0x21, 0, buffer, 0, 0);   /*print out the file*/
+    else
+        interrupt(0x21, 0, "messag not found\r\n", 0, 0);  /*no sectors read? then print an error*/
+    while(1);
 
-
-    return 0;
 }
 
 void printString(char chars[]){
@@ -106,7 +100,7 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
     char directory[512];
     int entrySize = 32;
 
-    readSector(directory, 2); //try sector 2?
+    readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
 
     int fileEntry; //current entry position
     for (fileEntry=0; fileEntry<512; fileEntry+32){
@@ -115,26 +109,27 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
 
         int j;
         for (j=0; j<6; j++){ //loop through six characters of entry
-            if(fileName[j] == directory[fileEntry + j]){ //filename char, entry offset plus current char
+            if (fileName[j] == directory[fileEntry + j]){ //filename char, entry offset plus current char
                 match = 1;
+            } else {
+                match = 0;
+                *sectorsRead = 0; //if not found, set the number of sectors read to 0 and return.
                 break;
             }
         }
 
         if (match){
-            int sector = directory[fileEntry + 6];
-            //use another for-loop to load it.
-            // Call readSector using dir[fileentry+6] as the sector number.
-            // Add 512 to the buffer address.
-            // Call readSector with dir[fileentry+7].
-            // Repeat this until you reach a sector number 0.
+            int k = 6;
+            int sector = directory[fileEntry + k];
 
-            *sectorsRead = 0;
+//            *sectorsRead = 0;
             while(sector != 0){
                 readSector(buffer, sector);
                 buffer+=512;
-                *sectorsRead+=1;
-                sector = directory[fileEntry + 7];
+                k++;
+                sector = directory[fileEntry + k];
+//                *sectorsRead+=1;
+//                sector = directory[fileEntry + 7];
             }
 
         }
