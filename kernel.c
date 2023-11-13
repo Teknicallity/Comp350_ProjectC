@@ -107,15 +107,12 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
     
     for (fileEntry = 0; fileEntry<512; fileEntry+=32){
 
-        int match = 0;
+        int match = 1;
 
         int j;
         for (j=0; j<6; j++){ //loop through six characters of entry
-            if (fileName[j] == directory[fileEntry + j]){ //filename char, entry offset plus current char
-                match = 1;
-            } else {
+            if (fileName[j] != directory[fileEntry + j]){ //filename char, entry offset plus current char
                 match = 0;
-                *sectorsRead = 0; //if not found, set the number of sectors read to 0 and return.
                 break;
             }
         }
@@ -134,7 +131,9 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 //                sector = directory[fileEntry + 7];
             }
             *sectorsRead += k - 6;
-        } else if(!match){
+            break;
+        }
+        if(!match){
             *sectorsRead = 0;
             break;
         }
