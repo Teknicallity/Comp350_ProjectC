@@ -144,12 +144,13 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 void executeProgram(char *programName){
 //    void putInMemory (int segment, int address, char character)
     char buffer[13312];
-    readFile(programName, buffer, 0); // implement sectors read check? if not found, error out
+    int sectorsRead;
+    int i;
+    readFile(programName, buffer, &sectorsRead); // implement sectors read check? if not found, error out
 
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
-    int i;
     for (i=0; i<sectorsRead; i++) {
-        putInMemory(0x2000, i * 512, buffer + i * 512);
+        putInMemory(0x2000, i*512, buffer+i*512);
     }
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
     launchProgram(0x2000);
