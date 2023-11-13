@@ -134,9 +134,9 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 //                sector = directory[fileEntry + 7];
             }
             *sectorsRead += k - 6;
-            break;
         } else if(!match){
             *sectorsRead = 0;
+            break;
         }
     }
 }
