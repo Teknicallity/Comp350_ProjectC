@@ -28,3 +28,8 @@ ld86 -o kernel -d kernel_c.o kernel_asm.o
 
 #copy message.txt in secotr 30
 #dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
+
+bcc -ansi -c -o tstpr1.o tstpr1.c
+as86 -o userlib.o userlib.asm
+ld86 -d -o tstpr1 tstpr1.o userlib.o
+./loadFile tstpr1
