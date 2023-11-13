@@ -175,9 +175,9 @@ void executeProgram(char *programName){
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
 //    void putInMemory (int segment, int address, char character)
     printString("putInMemory\r\n");
-    for (i=0; i<sectorsRead; i++) {
-        putInMemory(0x2000, i*512, buffer+i*512);
-        printString("within memory while loop\r\n"); //prints out one. Makes sense if tstprint1 is one sector
+    for (i=0; i<sectorsRead*512; i++) {
+        putInMemory(0x2000, i, *(buffer+i));
+        //printString("within memory while loop\r\n"); //prints out one. Makes sense if tstprint1 is one sector
     }
     printString("launchProgram\r\n");
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
