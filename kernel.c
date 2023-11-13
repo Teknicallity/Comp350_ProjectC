@@ -9,20 +9,23 @@ void readSector(char*, int);
 //interrupt(interNum, AX, BX, CX, DX)
 
 int main() {
-//    char line[80];
-//    makeInterrupt21();
-//    interrupt(0x21,1,line,0,0);
-//    printString("\n");
-//    interrupt(0x21,0,line,0,0);
-    char buffer[13312];   /*this is the maximum size of a file*/
+
+/* ProjectC step 1
+    char buffer[13312];   //this is the maximum size of a file
     int sectorsRead;
     makeInterrupt21();
-    interrupt(0x21, 3, "messag", buffer, &sectorsRead);   /*read the file into buffer*/
+    interrupt(0x21, 3, "messag", buffer, &sectorsRead);   //read the file into buffer
     if (sectorsRead>0)
-        interrupt(0x21, 0, buffer, 0, 0);   /*print out the file*/
+        interrupt(0x21, 0, buffer, 0, 0);   //print out the file
     else
-        interrupt(0x21, 0, "messag not found\r\n", 0, 0);  /*no sectors read? then print an error*/
+        interrupt(0x21, 0, "messag not found\r\n", 0, 0);  //no sectors read? then print an error
     while(1);
+    */
+
+    makeInterrupt21();
+    interrupt(0x21, 4, "tstpr1", 0, 0);
+    while(1);
+
 
 }
 
@@ -87,7 +90,7 @@ void readSector(char *buffer, int sector){
     interrupt(0x13, AX, BX, CX, DX);
 }
 
-readFile(char *fileName, char *buffer, int *sectorsRead ){
+void readFile(char *fileName, char *buffer, int *sectorsRead ){
 /*
  * 2. Go through the directory trying to match the file name.
  If you do not find it, set the number of sectors read to 0 and return.
@@ -97,7 +100,6 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
  Make sure to increment the number of sectors read as you go.
  */
     char directory[512];
-    int entrySize = 32;
     int fileEntry = 0; //current entry position
     printString("readFile\n");
 
@@ -139,6 +141,20 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
     }
 }
 
+void executeProgram(char *programName){
+//    void putInMemory (int segment, int address, char character)
+    char buffer[13312];
+    readFile(programName, buffer, 0); // implement sectors read check? if not found, error out
+
+    //In a loop, transfer the file from the buffer into memory at segment 0x2000.
+    int i;
+    for (i=0; i<sectorsRead; i++) {
+        putInMemory(0x2000, i * 512, buffer + i * 512);
+    }
+    //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
+    launchProgram(0x2000);
+}
+
 void handleInterrupt21(int ax, int bx, int cx, int dx){
     if (ax==0){
         printString(bx);
@@ -152,7 +168,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx){
     if (ax==3){
         readFile(bx, cx, dx);
     }
-    if (ax > 3){
+    if (ax==4){
+        executeProgram(bx);
+    }
+    if (ax > 4){
         printString("error");
     }
 }
