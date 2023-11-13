@@ -135,9 +135,8 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
             }
             *sectorsRead += k - 6;
             break;
-        } else {
+        } else if(!match){
             *sectorsRead = 0;
-            break;
         }
     }
 }
