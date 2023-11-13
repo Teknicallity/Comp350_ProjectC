@@ -101,7 +101,6 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
  */
     char directory[512];
     int fileEntry = 0; //current entry position
-    printString("readFile\n");
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
 
@@ -136,22 +135,32 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
             }
             *sectorsRead += k - 6;
             break;
-        } else *sectorsRead = 0;
-
+        } else {
+            *sectorsRead = 0;
+            break;
+        }
     }
 }
 
 void executeProgram(char *programName){
 //    void putInMemory (int segment, int address, char character)
     char buffer[13312];
-    int sectorsRead;
+    int sectorsRead = 0;
     int i;
-    readFile(programName, buffer, &sectorsRead); // implement sectors read check? if not found, error out
+    printString("redfile\r\n");
+    readFile(programName, buffer, &sectorsRead); 
+    
+    if (sectorsRead==0){
+        printString("Program not found.\r\n");
+        return;
+    }
 
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
+    printString("putInMemory\r\n");
     for (i=0; i<sectorsRead; i++) {
         putInMemory(0x2000, i*512, buffer+i*512);
     }
+    printString("launchProgram\r\n");
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
     launchProgram(0x2000);
 }
