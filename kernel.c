@@ -90,6 +90,18 @@ void readSector(char *buffer, int sector){
     interrupt(0x13, AX, BX, CX, DX);
 }
 
+void printDirectory(char *directory) {
+    for (int i=0; i<512; i+=32) {
+        if (directory[i] != 0) {
+            printString("File: ");
+            for (int j = 0; j < 6; j++) {
+                printChar(directory[i + j]);
+            }
+            printString("\r\n");
+        }
+    }
+}
+
 void readFile(char *fileName, char *buffer, int *sectorsRead ){
 /*
  * 2. Go through the directory trying to match the file name.
@@ -103,6 +115,7 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
     int fileEntry = 0; //current entry position
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
+    printDirectory(directory)
 
     
     for (fileEntry = 0; fileEntry<512; fileEntry+=32){
@@ -133,10 +146,9 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
             *sectorsRead += k - 6;
             break;
         }
-        if(!match){
-            *sectorsRead = 0;
-            break;
-        }
+    }
+    if(!match){
+        *sectorsRead = 0;
     }
 }
 
