@@ -127,6 +127,7 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 
         for (j=0; j<6; j++){ //loop through six characters of entry
             if (fileName[j] != directory[fileEntry + j]){ //filename char, entry offset plus current char
+
                 match = 0;
                 break;
             }
@@ -138,6 +139,7 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 
 //            *sectorsRead = 0;
             while(sector != 0){
+
                 readSector(buffer, sector);
                 buffer+=512;
                 k++;
@@ -145,6 +147,7 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 //                *sectorsRead+=1;
 //                sector = directory[fileEntry + 7];
             }
+
             *sectorsRead += k - 6;
             break;
         }
@@ -155,26 +158,32 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
 }
 
 void executeProgram(char *programName){
-//    void putInMemory (int segment, int address, char character)
     char buffer[13312];
     int sectorsRead = 0;
     int i;
     //printString("redfile\r\n");
-    readFile(programName, buffer, &sectorsRead); 
+    readFile(programName, buffer, &sectorsRead);
+    printString("SectorsRead: ");
+    printChar(sectorsRead+48);
+    printString("\r\n");
     
     if (sectorsRead==0){
         printString("Program not found.\r\n");
         return;
-    }
+    } else printString("Found file.\r\n");
 
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
+//    void putInMemory (int segment, int address, char character)
     printString("putInMemory\r\n");
     for (i=0; i<sectorsRead; i++) {
         putInMemory(0x2000, i*512, buffer+i*512);
+        printString("within memory while loop\r\n"); //prints out one. Makes sense if tstprint1 is one sector
     }
     printString("launchProgram\r\n");
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
     launchProgram(0x2000);
+
+    printString("launchProgram returned! error!\r\n"); //does not reach this
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx){
