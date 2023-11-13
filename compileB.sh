@@ -21,6 +21,7 @@ ld86 -o kernel -d kernel_c.o kernel_asm.o
 #copy machin code kernel ont diskc.img sector 3
 #commented out in projCs1
 #dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
+./loadFile kernel
 
 #loads message into img
 ./loadFile message.txt
