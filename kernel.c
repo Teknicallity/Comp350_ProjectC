@@ -100,6 +100,7 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
     char directory[512];
     int entrySize = 32;
     int fileEntry = 0; //current entry position
+    printString("readFile\n");
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
 
@@ -140,6 +141,7 @@ readFile(char *fileName, char *buffer, int *sectorsRead ){
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx){
+    printString("handle\n");
     if (ax==0){
         printString(bx);
     }
