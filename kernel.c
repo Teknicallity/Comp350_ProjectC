@@ -16,9 +16,8 @@ int main() {
 //    interrupt(0x21,0,line,0,0);
 
     char buffer[13312];   /*this is the maximum size of a file*/
-    printString("buffer\n");
     int sectorsRead;
-    printString("sectorsread\n");
+    printString("sectorsrad\n");
     makeInterrupt21();
     interrupt(0x21, 3, "messag", buffer, &sectorsRead);   /*read the file into buffer*/
     if (sectorsRead>0)
