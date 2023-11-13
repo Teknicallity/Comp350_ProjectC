@@ -91,10 +91,12 @@ void readSector(char *buffer, int sector){
 }
 
 void printDirectory(char *directory) {
-    for (int i=0; i<512; i+=32) {
+    int i;
+    int j;
+    for (i=0; i<512; i+=32) {
         if (directory[i] != 0) {
             printString("File: ");
-            for (int j = 0; j < 6; j++) {
+            for (j = 0; j < 6; j++) {
                 printChar(directory[i + j]);
             }
             printString("\r\n");
@@ -113,16 +115,16 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
  */
     char directory[512];
     int fileEntry = 0; //current entry position
+    int match;
+    int j;
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
-    printDirectory(directory)
+    printDirectory(directory);
 
-    
-    for (fileEntry = 0; fileEntry<512; fileEntry+=32){
+    for(fileEntry = 0; fileEntry<512; fileEntry+=32){
 
-        int match = 1;
+        match = 1;
 
-        int j;
         for (j=0; j<6; j++){ //loop through six characters of entry
             if (fileName[j] != directory[fileEntry + j]){ //filename char, entry offset plus current char
                 match = 0;
@@ -157,7 +159,7 @@ void executeProgram(char *programName){
     char buffer[13312];
     int sectorsRead = 0;
     int i;
-    printString("redfile\r\n");
+    //printString("redfile\r\n");
     readFile(programName, buffer, &sectorsRead); 
     
     if (sectorsRead==0){
