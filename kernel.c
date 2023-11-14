@@ -23,8 +23,7 @@ int main() {
     */
 
     makeInterrupt21();
-    interrupt(0x21, 4, "tstpr1", 0, 0);
-    while(1);
+    interrupt(0x21, 4, "tstpr2", 0, 0);
 
 
 }
@@ -134,21 +133,21 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
         }
 
         if (match){
-            int k = 6;
-            int sector = directory[fileEntry + k];
+            int nameLength = 6;
+            int sector = directory[fileEntry + nameLength];
 
 //            *sectorsRead = 0;
             while(sector != 0){
 
                 readSector(buffer, sector);
                 buffer+=512;
-                k++;
-                sector = directory[fileEntry + k];
+                nameLength++;
+                sector = directory[fileEntry + nameLength];
 //                *sectorsRead+=1;
 //                sector = directory[fileEntry + 7];
             }
 
-            *sectorsRead += k - 6;
+            *sectorsRead += nameLength - 6;
             break;
         }
     }
@@ -174,16 +173,19 @@ void executeProgram(char *programName){
 
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
 //    void putInMemory (int segment, int address, char character)
-    printString("putInMemory\r\n");
     for (i=0; i<sectorsRead*512; i++) {
         putInMemory(0x2000, i, *(buffer+i));
         //printString("within memory while loop\r\n"); //prints out one. Makes sense if tstprint1 is one sector
     }
-    printString("launchProgram\r\n");
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
     launchProgram(0x2000);
 
     printString("launchProgram returned! error!\r\n"); //does not reach this
+}
+
+void terminate(){
+    printString("Terminated\r\n");
+    while(1);
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx){
@@ -202,7 +204,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx){
     if (ax==4){
         executeProgram(bx);
     }
-    if (ax > 4){
+    if (ax==5){
+        terminate();
+    }
+    if (ax > 5){
         printString("error");
     }
 }
