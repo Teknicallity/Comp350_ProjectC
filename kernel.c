@@ -20,12 +20,16 @@ int main() {
     else
         interrupt(0x21, 0, "messag not found\r\n", 0, 0);  //no sectors read? then print an error
     while(1);
-    */
+*/
 
+/* ProjectC step 3
     makeInterrupt21();
     interrupt(0x21, 4, "tstpr2", 0, 0);
+*/
 
-
+    makeInterrupt21();
+    interrupt(0x21, 4, "shell", 0, 0);
+    while(1);
 }
 
 void printString(char chars[]){
@@ -70,7 +74,8 @@ void readString(char input[]){
         }
 
     } while(key != 0xd);
-    interrupt(0x10, 0xe * 256 + 0xd, 0, 0, 0); //final carriage return
+    //interrupt(0x10, 0xe * 256 + 0xd, 0, 0, 0); //final carriage return
+    printString("\r\n");
 }
 
 void readSector(char *buffer, int sector){
@@ -184,8 +189,15 @@ void executeProgram(char *programName){
 }
 
 void terminate(){
-    printString("Terminated\r\n");
-    while(1);
+    char shellname[6];
+    shellname[0]="s";
+    shellname[1]="h";
+    shellname[2]="e";
+    shellname[3]="l";
+    shellname[4]="l";
+    shellname[5]="\0";
+
+    executeProgram(shellname);
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx){
