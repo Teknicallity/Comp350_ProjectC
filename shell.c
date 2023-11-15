@@ -43,8 +43,10 @@ void typeCommand(char command[]){
     syscall(3, filename, buffer, &sectorsread);
     if (sectorsread==0){
         syscall(0, "File not found\r\n");
-    } else syscall(0, buffer, 0, 0);
-    
+    } else {
+        syscall(0, buffer, 0, 0);
+        syscall(0, "\r", 0, 0);
+    }
 }
 
 void execCommand(char command[]){
