@@ -166,22 +166,26 @@ void executeProgram(char *programName){
     int sectorsRead = 0;
     int i;
     //printString("redfile\r\n");
+    printChar('a');
     readFile(programName, buffer, &sectorsRead);
-    printString("SectorsRead: ");
-    printChar(sectorsRead+48);
-    printString("\r\n");
+    //printString("SectorsRead: ");
+    //printChar(sectorsRead+48);
+    //printString("\r\n");
+    printChar('b');
     
     if (sectorsRead==0){
         printString("Error: Program not found.\r\n");
+        printChar('x');
         return;
     } //else printString("Found file.\r\n");
-
+printChar('c');
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
 //    void putInMemory (int segment, int address, char character)
     for (i=0; i<sectorsRead*512; i++) {
         putInMemory(0x2000, i, *(buffer+i));
         //printString("within memory while loop\r\n"); //prints out one. Makes sense if tstprint1 is one sector
     }
+printChar('d');
     //Call the assembly function void launchProgram(int segment), and pass segment 0x2000 as the parameter
     launchProgram(0x2000);
 
@@ -189,14 +193,14 @@ void executeProgram(char *programName){
 }
 
 void terminate(){
-    char shellname[6];
+    char shellname[7];
     shellname[0]="s";
     shellname[1]="h";
     shellname[2]="e";
     shellname[3]="l";
     shellname[4]="l";
+    shellname[4]=0x00;
     shellname[5]="\0";
-
     executeProgram(shellname);
 }
 
