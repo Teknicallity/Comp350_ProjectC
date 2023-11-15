@@ -123,10 +123,9 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
     int j;
 
     readSector(directory, 2); //map at sector 1, directory at sector 2, kernel at sector 3
-    printDirectory(directory);
+    //printDirectory(directory);
 
     for(fileEntry = 0; fileEntry<512; fileEntry+=32){
-
         match = 1;
 
         for (j=0; j<6; j++){ //loop through six characters of entry
@@ -158,6 +157,7 @@ void readFile(char *fileName, char *buffer, int *sectorsRead ){
     }
     if(!match){
         *sectorsRead = 0;
+        printString("Error: File not found.\r\n");
     }
 }
 
