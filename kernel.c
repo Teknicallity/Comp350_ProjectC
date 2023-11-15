@@ -75,7 +75,7 @@ void readString(char input[]){
 
     } while(key != 0xd);
     //interrupt(0x10, 0xe * 256 + 0xd, 0, 0, 0); //final carriage return
-    printString("\r\n");
+    interrupt(0x10, 0xe * 256 + 0xa, 0, 0, 0); //line feed
 }
 
 void readSector(char *buffer, int sector){
@@ -172,9 +172,9 @@ void executeProgram(char *programName){
     printString("\r\n");
     
     if (sectorsRead==0){
-        printString("Program not found.\r\n");
+        printString("Error: Program not found.\r\n");
         return;
-    } else printString("Found file.\r\n");
+    } //else printString("Found file.\r\n");
 
     //In a loop, transfer the file from the buffer into memory at segment 0x2000.
 //    void putInMemory (int segment, int address, char character)
