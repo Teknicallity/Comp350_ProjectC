@@ -1,4 +1,7 @@
 #include <stdio.h>
+
+//Joshua Sheputa 2023
+
 void printString(char[]);
 void printChar(char);
 void readString(char[]);
